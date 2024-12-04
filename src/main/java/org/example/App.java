@@ -4,14 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.example.http.HttpService;
 import org.example.http.MessageService;
-import org.example.model.AppointHistory;
+import org.example.model.Config;
+import org.example.model.LocalAppointHistory;
 import org.example.model.BaseResult;
 import org.example.model.Ticket;
-import org.example.model.TicketResult;
+import org.example.util.AppointHistoriesUtils;
 import org.example.util.ConfigUtils;
 import org.example.util.PhoneUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class App {
@@ -20,7 +22,8 @@ public class App {
     private long totalCount = 0;
 
 
-    private List<AppointHistory> appointHistories = new ArrayList<>();
+    private List<LocalAppointHistory> appointHistories = new ArrayList<>();
+    private Config config;
 
     public void start() {
         init();
@@ -41,13 +44,13 @@ public class App {
 
     public void doRun(int shopId) {
         try {
-            TicketResult ticket = HttpService.getTicket(shopId);
-            if(!ticket.getSuccess()){
-                log.error("接口返回出错: {}" ,ticket.getMsg());
+            BaseResult<List<Ticket>> result = HttpService.getTicket(shopId);
+            if(!result.getSuccess()){
+                log.error("接口返回出错: {}" ,result.getMsg());
                 errorCount++;
                 return;
             }
-            check(ticket.getData());
+            check(result.getData());
         } catch (Exception e) {
             log.error("未知错误: {}" ,e.getMessage());
             errorCount++;
@@ -60,10 +63,10 @@ public class App {
         }
         for (Ticket ticket : tickets) {
             if (ticket.getStockNum() - ticket.getAppointmentNum() > 0) {
-                if (!hasAppointed(ticket)) {
+                if (appointedCount(ticket) < config.getMaxCountPerDay()) {
                     log.info("{}有票了", ticket.getShopName());
                     //发送消息
-                    MessageService.sendRemainTicketMessage(ticket.getShopName(), ticket);
+                    //MessageService.sendRemainTicketMessage(ticket.getShopName(), ticket, config);
                     //预约
                     appoint(ticket);
                 }
@@ -73,38 +76,54 @@ public class App {
     }
 
     public void init(){
-        List<AppointHistory> t = ConfigUtils.getAppointHistories();
+        List<LocalAppointHistory> t = AppointHistoriesUtils.getAppointHistories();
         if (!t.isEmpty()) {
             appointHistories = t;
         }
+        config = ConfigUtils.getAppointHistories();
     }
     public void appoint(Ticket ticket) {
-        if (hasAppointed(ticket)) {
+        long appointedCount = appointedCount(ticket);
+        if (appointedCount >= config.getMaxCountPerDay()) {
             log.info("{} {} 已经预约过了 ", ticket.getShopName(), ticket.getAppointmentDate());
             return;
         }
-        //预约
-        String phone = PhoneUtil.generateRandomPhoneNumber();
-        try {
-            BaseResult result = HttpService.appoint(ticket, phone);
-            if (!result.getSuccess()) {
-                log.error("预约时发生错误 返回数据 {}", JSONObject.toJSONString(result));
+        for (long i = appointedCount; i < config.getMaxCountPerDay(); i++) {
+            //预约
+            String phone = PhoneUtil.generateRandomPhoneNumber();
+            try {
+                BaseResult<String> result = HttpService.appoint(ticket, phone);
+                if (!result.getSuccess()) {
+                    log.error("预约时发生错误 返回数据 {}", JSONObject.toJSONString(result));
+                    return;
+                }
+                appointHistories.add(new LocalAppointHistory(phone, ticket.getShopId(), ticket.getShopName(), ticket.getAppointmentDate()));
+                AppointHistoriesUtils.saveAppointHistory(appointHistories);
+                String phones = getPhones(ticket);
+                //发送预约成功短信
+                MessageService.sendAppointedMessage(ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
+            }catch (Exception e){
+                log.error("预约时发生错误 ", e);
                 return;
             }
-            appointHistories.add(new AppointHistory(phone, ticket.getShopId(), ticket.getShopName(), ticket.getAppointmentDate()));
-            ConfigUtils.saveAppointHistory(appointHistories);
-            //发送预约成功短信
-            MessageService.sendAppointedMessage(ticket.getShopName(), ticket.getAppointmentDate(), phone);
-        }catch (Exception e){
-            log.error("预约时发生错误 ", e);
         }
+
 
     }
 
-    private boolean hasAppointed(Ticket ticket) {
+    private String getPhones(Ticket ticket){
         return appointHistories.stream()
-                        .filter(t -> t.getDate().equals(ticket.getAppointmentDate()))
-                        .anyMatch(t -> t.getShopId().equals(ticket.getShopId()));
+                .filter(t -> t.getDate().equals(ticket.getAppointmentDate()))
+                .filter(t -> t.getShopId().equals(ticket.getShopId()))
+                .map(LocalAppointHistory::getPhone)
+                .collect(Collectors.joining("，"));
+    }
+
+    private long appointedCount(Ticket ticket) {
+        return appointHistories.stream()
+                .filter(t -> t.getDate().equals(ticket.getAppointmentDate()))
+                .filter(t -> t.getShopId().equals(ticket.getShopId()))
+                .count();
     }
 
 }

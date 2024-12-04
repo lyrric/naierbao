@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppointHistory {
+public class LocalAppointHistory {
 
     private String phone;
 
