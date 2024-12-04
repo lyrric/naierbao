@@ -77,6 +77,7 @@ public class App {
         if (!t.isEmpty()) {
             appointHistories = t;
         }
+        ConfigUtils.saveAppointHistory(appointHistories);
     }
     public void appoint(Ticket ticket) {
         if (hasAppointed(ticket)) {
