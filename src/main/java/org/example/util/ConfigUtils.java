@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ConfigUtils {
 
-    public static final String BASE_PATH = "D:\\";
+    public static final String BASE_PATH = "./";
     public static final String APPOINT_HISTORY_PATH = BASE_PATH + "AppointHistory.data";
 
 

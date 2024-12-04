@@ -8,8 +8,8 @@ import java.util.List;
 @Slf4j
 public class MessageService {
 
-    private static final String SPT_WXD = "SPT_fHhL446xn8oCuooWBnnY8wB9lxfb";
-    private static final String SPT_CLQ = "SPT_kiXYZ6ws8QiCc3AMEMW94bhpuMd2";
+    private static final String SPT_WXD = "SPT_1";
+    private static final String SPT_CLQ = "SPT_2";
 
     public static void sendRemainTicketMessage(String shopName, Ticket ticket) {
         StringBuilder message = new StringBuilder();
