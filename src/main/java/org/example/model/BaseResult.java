@@ -5,13 +5,15 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class BaseResult {
+public class BaseResult<T> {
 
     private Boolean success;
 
     private Integer code;
 
     private String msg;
+
+    private T data;
 
 
 }

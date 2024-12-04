@@ -9,10 +9,6 @@ public class Ticket {
      * 环球店
      */
     public static final int SHOP_HUANQIU = 10;
-    /**
-     * 大悦城店
-     */
-    public static final int SHOP_DAYUECHENG = 15;
 
     private String id;
     /**
