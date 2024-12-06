@@ -81,6 +81,7 @@ public class App {
             appointHistories = t;
         }
         config = ConfigUtils.getAppointHistories();
+        log.info("读取配置文件 {}", JSONObject.toJSONString(config));
     }
     public void appoint(Ticket ticket) {
         long appointedCount = appointedCount(ticket);
@@ -88,6 +89,7 @@ public class App {
             log.info("{} {} 已经预约过了 ", ticket.getShopName(), ticket.getAppointmentDate());
             return;
         }
+        boolean hasMaxAppointment = false;
         for (long i = appointedCount; i < config.getMaxCountPerDay(); i++) {
             //预约
             String phone = PhoneUtil.generateRandomPhoneNumber();
@@ -95,20 +97,22 @@ public class App {
                 BaseResult<String> result = HttpService.appoint(ticket, phone);
                 if (!result.getSuccess()) {
                     log.error("预约时发生错误 返回数据 {}", JSONObject.toJSONString(result));
-                    return;
+                    break;
                 }
                 appointHistories.add(new LocalAppointHistory(phone, ticket.getShopId(), ticket.getShopName(), ticket.getAppointmentDate()));
                 AppointHistoriesUtils.saveAppointHistory(appointHistories);
-                String phones = getPhones(ticket);
-                //发送预约成功短信
-                MessageService.sendAppointedMessage(ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
+                log.info("预约成功");
+                hasMaxAppointment = true;
             }catch (Exception e){
                 log.error("预约时发生错误 ", e);
-                return;
+                break;
             }
         }
-
-
+        if (hasMaxAppointment) {
+            String phones = getPhones(ticket);
+            //发送预约成功短信
+            MessageService.sendAppointedMessage(ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
+        }
     }
 
     private String getPhones(Ticket ticket){
