@@ -23,26 +23,31 @@ public class App {
 
 
     private List<LocalAppointHistory> appointHistories = new ArrayList<>();
-    private Config config;
+    private List<Config> configs;
 
     public void start() {
         init();
         log.info("开始运行");
         while (true) {
-            doRun(Ticket.SHOP_HUANQIU);
-            try {
-                Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for (Config config : configs) {
+                for (Integer shopId : config.getShopIds()) {
+                    doRun(shopId,config);
+                    try {
+                        Thread.sleep(1000 * 10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    totalCount++;
+                    if (totalCount % 100 == 0) {
+                        log.info("已尝试次数: {} 异常次数: {}", totalCount, errorCount);
+                    }
+                }
             }
-            totalCount++;
-            if (totalCount % 100 == 0) {
-                log.info("已尝试次数: {} 异常次数: {}", totalCount, errorCount);
-            }
+
         }
     }
 
-    public void doRun(int shopId) {
+    public void doRun(int shopId,Config config) {
         try {
             BaseResult<List<Ticket>> result = HttpService.getTicket(shopId);
             if(!result.getSuccess()){
@@ -50,13 +55,14 @@ public class App {
                 errorCount++;
                 return;
             }
-            check(result.getData());
+            check(result.getData(),config);
         } catch (Exception e) {
             log.error("未知错误: {}" ,e.getMessage());
             errorCount++;
         }
     }
-    public void check(List<Ticket> tickets) {
+
+    public void check(List<Ticket> tickets, Config config) {
         if (tickets == null || tickets.isEmpty()) {
             log.info("没有获取到数据");
             return;
@@ -68,7 +74,7 @@ public class App {
                     //发送消息
                     //MessageService.sendRemainTicketMessage(ticket.getShopName(), ticket, config);
                     //预约
-                    appoint(ticket);
+                    appoint(ticket,config);
                 }
 
             }
@@ -80,10 +86,11 @@ public class App {
         if (!t.isEmpty()) {
             appointHistories = t;
         }
-        config = ConfigUtils.getAppointHistories();
-        log.info("读取配置文件 {}", JSONObject.toJSONString(config));
+        configs = ConfigUtils.getAppointHistories();
+        log.info("读取配置文件 {}", JSONObject.toJSONString(configs));
     }
-    public void appoint(Ticket ticket) {
+
+    public void appoint(Ticket ticket, Config config) {
         long appointedCount = appointedCount(ticket);
         if (appointedCount >= config.getMaxCountPerDay()) {
             log.info("{} {} 已经预约过了 ", ticket.getShopName(), ticket.getAppointmentDate());
@@ -103,7 +110,7 @@ public class App {
                 AppointHistoriesUtils.saveAppointHistory(appointHistories);
                 log.info("预约成功");
                 hasMaxAppointment = true;
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("预约时发生错误 ", e);
                 break;
             }
