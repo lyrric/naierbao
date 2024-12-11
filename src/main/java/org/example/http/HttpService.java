@@ -2,30 +2,30 @@ package org.example.http;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.example.model.BaseResult;
+import org.example.model.CloudAppointHistory;
 import org.example.model.Ticket;
-import org.example.model.TicketResult;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public class HttpService {
 
     public static final int TICKET_ID = 23603;
 
-    public static TicketResult getTicket(Integer shopId) throws IOException {
+    public static BaseResult<List<Ticket>> getTicket(Integer shopId) throws IOException {
         String url = String.format("https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/appointment/"
                 + shopId + "?ticketId=" + 23603);
         HttpGet get = new HttpGet(url);
@@ -33,10 +33,13 @@ public class HttpService {
         CloseableHttpResponse response = httpClient.execute(get);
         HttpEntity httpEntity = response.getEntity();
         String json = EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
-        return JSONObject.parseObject(json, TicketResult.class);
+        BaseResult<List<Ticket>> baseResult = JSONObject.parseObject(json, new TypeReference<BaseResult<List<Ticket>>>() {
+        });
+        checkResult(baseResult);
+        return baseResult;
     }
 
-    public static BaseResult appoint(Ticket ticket, String phone) {
+    public static BaseResult<String> appoint(Ticket ticket, String phone) {
         String url = "https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/save";
         Map<String, Object> body = new HashMap<>();
         body.put("adultNum", 1);
@@ -45,10 +48,13 @@ public class HttpService {
         body.put("phone", phone);
         body.put("shopId", ticket.getShopId());
         body.put("shopName", ticket.getShopName());
-        body.put("ticketId", TICKET_ID);
+        body.put("ticketId", ticket.getId());
         body.put("ticketName", "一周岁以下宝宝免费体验票");
         String result = HttpUtil.post(url, JSONObject.toJSONString(body));
-        return JSONObject.parseObject(result, BaseResult.class);
+        BaseResult<String> baseResult = JSONObject.parseObject(result, new TypeReference<BaseResult<String>>() {
+        });
+        checkResult(baseResult);
+        return baseResult;
     }
 
     public static void sendMessage(String spt, String content, String summary){
@@ -59,6 +65,40 @@ public class HttpService {
         body.put("spt", spt);
         String json = HttpUtil.post("https://wxpusher.zjiecode.com/api/send/message/simple-push", JSONObject.toJSONString(body));
         log.info("发型消息结果: {}", json);
+    }
+
+    public static BaseResult<List<CloudAppointHistory>> getActivityAppointment(String phone) throws IOException {
+        String url = String.format("https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/list?phone=" + phone);
+        HttpGet get = new HttpGet(url);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
+            CloseableHttpResponse response = httpClient.execute(get);
+            HttpEntity httpEntity = response.getEntity();
+            String json = EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
+            BaseResult<List<CloudAppointHistory>> result = JSONObject.parseObject(json, new TypeReference<BaseResult<List<CloudAppointHistory>>>() {
+            });
+            checkResult(result);
+            return result;
+        }
+
+    }
+    public static BaseResult<String> cancelAppointment(String id) throws IOException {
+        String url = String.format("https://reserve.neobiochina.com/api/neobio-activity/activity/cancelAppointment?id=" + id);
+        HttpGet get = new HttpGet(url);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()){
+            CloseableHttpResponse response = httpClient.execute(get);
+            HttpEntity httpEntity = response.getEntity();
+            String json = EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
+            BaseResult<String> result = JSONObject.parseObject(json, new TypeReference<BaseResult<String>>() {
+            });
+            checkResult(result);
+            return result;
+        }
+    }
+
+    private static void checkResult(BaseResult<?> result){
+        if (!result.getSuccess()) {
+            throw new RuntimeException(JSONObject.toJSONString(result));
+        }
     }
 
 
