@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class Ticket {
     /**
-     * 环球店
+     * 成都环球店
      */
-    public static final int SHOP_HUANQIU = 10;
+    public static final int SHOP_CD_HUANQIU = 10;
 
     private String id;
     /**

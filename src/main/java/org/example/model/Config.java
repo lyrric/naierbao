@@ -7,6 +7,12 @@ import java.util.List;
 
 @Data
 public class Config {
+
+    /**
+     * 门店列表
+     */
+    public List<Integer> shopIds;
+
     /**
      * 推送的列表
      */
