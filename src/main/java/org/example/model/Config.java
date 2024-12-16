@@ -11,8 +11,7 @@ public class Config {
     /**
      * 门店列表
      */
-    public List<Integer> shopIds;
-
+    public String shopId;
     /**
      * 推送的列表
      */

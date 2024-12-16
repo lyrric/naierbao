@@ -1,7 +1,6 @@
 package org.example;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.util.ChangePhoneUtils;
 
 import java.io.IOException;
 
@@ -9,16 +8,15 @@ import java.io.IOException;
 public class Main {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (args.length > 0) {
             if ("ui".equals(args[0])) {
-                UiMain.main();
+                //UiMain.show();
             }else{
-                ChangePhoneUtils.start();
+                new App().start();
             }
-
         }else{
-            new App().start();
+            ChangePhoneUi.show();
         }
     }
 

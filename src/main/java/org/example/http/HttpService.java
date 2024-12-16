@@ -11,7 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.example.model.BaseResult;
-import org.example.model.CloudAppointHistory;
+import org.example.model.AppointHistory;
 import org.example.model.Ticket;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class HttpService {
 
     public static final int TICKET_ID = 23603;
 
-    public static BaseResult<List<Ticket>> getTicket(Integer shopId) throws IOException {
+    public static BaseResult<List<Ticket>> getTicket(String shopId) throws IOException {
         String url = String.format("https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/appointment/"
                 + shopId + "?ticketId=" + 23603);
         HttpGet get = new HttpGet(url);
@@ -39,7 +39,7 @@ public class HttpService {
         return baseResult;
     }
 
-    public static BaseResult<String> appoint(Ticket ticket, String phone) {
+    public static BaseResult<AppointHistory> appoint(Ticket ticket, String phone) {
         String url = "https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/save";
         Map<String, Object> body = new HashMap<>();
         body.put("adultNum", 1);
@@ -51,7 +51,7 @@ public class HttpService {
         body.put("ticketId", ticket.getId());
         body.put("ticketName", "一周岁以下宝宝免费体验票");
         String result = HttpUtil.post(url, JSONObject.toJSONString(body));
-        BaseResult<String> baseResult = JSONObject.parseObject(result, new TypeReference<BaseResult<String>>() {
+        BaseResult<AppointHistory> baseResult = JSONObject.parseObject(result, new TypeReference<BaseResult<AppointHistory>>() {
         });
         checkResult(baseResult);
         return baseResult;
@@ -67,14 +67,14 @@ public class HttpService {
         log.info("发型消息结果: {}", json);
     }
 
-    public static BaseResult<List<CloudAppointHistory>> getActivityAppointment(String phone) throws IOException {
+    public static BaseResult<List<AppointHistory>> getActivityAppointment(String phone) throws IOException {
         String url = String.format("https://reserve.neobiochina.com/api/neobio-activity/activityAppointment/list?phone=" + phone);
         HttpGet get = new HttpGet(url);
         try (CloseableHttpClient httpClient = HttpClients.createDefault()){
             CloseableHttpResponse response = httpClient.execute(get);
             HttpEntity httpEntity = response.getEntity();
             String json = EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
-            BaseResult<List<CloudAppointHistory>> result = JSONObject.parseObject(json, new TypeReference<BaseResult<List<CloudAppointHistory>>>() {
+            BaseResult<List<AppointHistory>> result = JSONObject.parseObject(json, new TypeReference<BaseResult<List<AppointHistory>>>() {
             });
             checkResult(result);
             return result;

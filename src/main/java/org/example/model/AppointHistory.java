@@ -1,19 +1,21 @@
 package org.example.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CloudAppointHistory {
+@Builder
+public class AppointHistory {
 
     private String id;
 
     private String phone;
 
-    private Integer shopId;
+    private String shopId;
 
     private String shopName;
 
@@ -23,7 +25,7 @@ public class CloudAppointHistory {
 
     private String ticketName;
     /**
-     * 状态 1：待使用， 2已取消，3已使用
+     * 状态 1：待使用， 2:已取消，3:已使用
      */
     private Integer status;
     /**
@@ -34,4 +36,9 @@ public class CloudAppointHistory {
     private Boolean isPunished;
 
     private Integer isDeleted;
+    private String createTime;
+    /**
+     * 1 默认，2 旧数据，3 新数据
+     */
+    private Integer type;
 }

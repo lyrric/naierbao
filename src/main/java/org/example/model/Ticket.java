@@ -14,7 +14,7 @@ public class Ticket {
     /**
      * 店铺id
      */
-    private Integer shopId;
+    private String shopId;
     /**
      * 店铺名称
      */

@@ -20,6 +20,6 @@ public class ConfigUtils {
             }
             return JSONObject.parseArray(json, Config.class);
         }
-        throw new RuntimeException("没有获取到配置");
+        return Collections.emptyList();
     }
 }
