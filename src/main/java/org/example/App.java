@@ -7,13 +7,10 @@ import org.example.db.DBUtil;
 import org.example.http.HttpService;
 import org.example.http.MessageService;
 import org.example.model.*;
-import org.example.util.AppointHistoriesUtils;
 import org.example.util.AreaUtil;
 import org.example.util.ConfigUtils;
 import org.example.util.PhoneUtil;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -102,7 +99,7 @@ public class App {
                 AppointHistory AppointHistory = result.getData();
                 AppointHistory.setCreateTime(DateUtil.format(new Date(), NORM_DATETIME_PATTERN));
                 AppointHistory.setType(1);
-                DBUtil.insert(AppointHistory);
+                DBUtil.insertAptHist(AppointHistory);
                 log.info("预约成功");
                 hasMaxAppointment = true;
             } catch (Exception e) {
@@ -114,7 +111,8 @@ public class App {
             String phones = getPhones(ticket);
             //发送预约成功短信
             if (config != null) {
-                MessageService.sendAppointedMessage(ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
+                Optional<Area> optionalArea = AreaUtil.getArea(config.getShopId());
+                MessageService.sendAppointedMessage(optionalArea.map(Area::getDictValue).orElse(""), ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
             }
 
         }

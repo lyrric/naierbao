@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.example.model.Area;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AreaUtil {
@@ -25,5 +27,16 @@ public class AreaUtil {
                 .collect(Collectors.toList());
     }
 
-
+    public static Optional<Area> getArea(String shopId){
+        for (Area area : areas) {
+            if (area.getChildren() != null) {
+                for (Area child : area.getChildren()) {
+                    if (Objects.equals(child.getRemark(), shopId)) {
+                        return Optional.of(child);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
 }

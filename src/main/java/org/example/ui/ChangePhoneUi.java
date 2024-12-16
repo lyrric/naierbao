@@ -1,4 +1,4 @@
-package org.example;
+package org.example.ui;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -16,11 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.db.DBUtil;
 import org.example.model.Area;
 import org.example.model.AppointHistory;
-import org.example.util.AppointHistoriesUtils;
 import org.example.util.AreaUtil;
 import org.example.util.ChangePhoneUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -254,6 +251,7 @@ public class ChangePhoneUi extends Application {
     private void initAreaChoiceBox(){
         areaBox = new ChoiceBox<>();
         areaBox.setPrefWidth(80);
+        areaBox.setPadding( new Insets(0,40,0,0) );
         List<Pair<String, Area>> pairs = AreaUtil
                 .getAreas()
                 .stream()
@@ -308,8 +306,8 @@ public class ChangePhoneUi extends Application {
                         selectedItem.setStatus(2);
                         selectedItem.setType(2);
                         change.setType(3);
-                        DBUtil.update(selectedItem.getId(), 2,2);
-                        DBUtil.insert(change);
+                        DBUtil.updateAptHist(selectedItem.getId(), 2,2);
+                        DBUtil.insertAptHist(change);
                         refresh();
                     }catch (Exception e){
                         final Alert alert2 = new Alert(Alert.AlertType.INFORMATION, e.getMessage(), ButtonType.OK); // 实体化Alert对话框对象，并直接在建构子设置对话框的消息类型
