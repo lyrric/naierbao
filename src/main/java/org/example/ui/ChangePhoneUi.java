@@ -1,5 +1,6 @@
 package org.example.ui;
 
+import cn.hutool.core.date.DateUtil;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,13 +13,14 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.example.db.DBUtil;
-import org.example.model.Area;
+import org.example.db.AppointHistoryBiz;
 import org.example.model.AppointHistory;
+import org.example.model.Area;
 import org.example.util.AreaUtil;
 import org.example.util.ChangePhoneUtils;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -135,7 +137,7 @@ public class ChangePhoneUi extends Application {
         if (selectedItem != null) {
             type = selectedItem.getValue();
         }
-        List<AppointHistory> appointHistories = DBUtil.selectList(shopIds,
+        List<AppointHistory> appointHistories = AppointHistoryBiz.selectList(shopIds,
                 phoneFiled.getText(),
                 status,
                 type);
@@ -159,7 +161,7 @@ public class ChangePhoneUi extends Application {
         TableColumn<AppointHistory, String> phoneColumn = new TableColumn<>("手机号");
         TableColumn<AppointHistory, Integer> stateColumn = new TableColumn<>("状态");
         TableColumn<AppointHistory, Integer> typeColumn = new TableColumn<>("类型");
-        TableColumn<AppointHistory, String> createTimeColumn = new TableColumn<>("创建时间");
+        TableColumn<AppointHistory, Date> createTimeColumn = new TableColumn<>("创建时间");
         shopIdColumn.setCellValueFactory(new PropertyValueFactory<>("shopId"));
         shopNameColumn.setCellValueFactory(new PropertyValueFactory<>("shopName"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentDate"));
@@ -236,6 +238,17 @@ public class ChangePhoneUi extends Application {
                 }
             }
         });
+        createTimeColumn.setCellFactory(col -> new TableCell<AppointHistory, Date>() {
+            @Override
+            protected void updateItem(Date item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                }else {
+                    setText(DateUtil.format(item, "yyyy-MM-dd HH:mm:ss"));
+                }
+            }
+        });
         tableView.getColumns().addAll(
                 shopIdColumn,
                 shopNameColumn,
@@ -306,8 +319,8 @@ public class ChangePhoneUi extends Application {
                         selectedItem.setStatus(2);
                         selectedItem.setType(2);
                         change.setType(3);
-                        DBUtil.updateAptHist(selectedItem.getId(), 2,2);
-                        DBUtil.insertAptHist(change);
+                        AppointHistoryBiz.updateAptHist(selectedItem.getId(), 2,2);
+                        AppointHistoryBiz.insert(change);
                         refresh();
                     }catch (Exception e){
                         final Alert alert2 = new Alert(Alert.AlertType.INFORMATION, e.getMessage(), ButtonType.OK); // 实体化Alert对话框对象，并直接在建构子设置对话框的消息类型

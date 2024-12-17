@@ -1,16 +1,22 @@
 package org.example.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@TableName("appoint_history")
 public class AppointHistory {
 
+    @TableId
     private String id;
 
     private String phone;
@@ -36,7 +42,8 @@ public class AppointHistory {
     private Boolean isPunished;
 
     private Integer isDeleted;
-    private String createTime;
+
+    private Date createTime;
     /**
      * 1 默认，2 旧数据，3 新数据
      */

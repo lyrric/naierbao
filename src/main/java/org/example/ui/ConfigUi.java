@@ -83,7 +83,7 @@ public class ConfigUi extends Application {
     }
     private void refresh(){
         tableView.getItems().clear();
-        tableView.getItems().addAll(DBUtil.getConfigs());
+        //tableView.getItems().addAll(DBUtil.getConfigs());
     }
     public static void main(String[] args) {
         launch(args);

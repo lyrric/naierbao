@@ -11,7 +11,7 @@ import java.util.List;
 public class AppointHistoriesUtils {
 
 
-    public static final String APPOINT_HISTORY_PATH = "./AppointHistory.data";
+    public static final String APPOINT_HISTORY_PATH = "d://AppointHistory.data";
 
 
     /*public static List<AppointHistory> getAppointHistories() {
@@ -25,11 +25,12 @@ public class AppointHistoriesUtils {
         }
         return Collections.emptyList();
     }
+*/
 
     public static void saveAppointHistory(AppointHistory AppointHistory) {
         String json = JSONObject.toJSONString(AppointHistory);
         FileUtil.appendString(json, APPOINT_HISTORY_PATH, "UTF-8");
 
-    }*/
+    }
 
 }

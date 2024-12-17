@@ -1,9 +1,8 @@
 package org.example;
 
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.example.db.DBUtil;
+import org.example.db.AppointHistoryBiz;
 import org.example.http.HttpService;
 import org.example.http.MessageService;
 import org.example.model.*;
@@ -14,8 +13,6 @@ import org.example.util.PhoneUtil;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static cn.hutool.core.date.DatePattern.NORM_DATETIME_PATTERN;
 
 @Slf4j
 public class App {
@@ -97,9 +94,9 @@ public class App {
                     break;
                 }
                 AppointHistory AppointHistory = result.getData();
-                AppointHistory.setCreateTime(DateUtil.format(new Date(), NORM_DATETIME_PATTERN));
+                AppointHistory.setCreateTime(new Date());
                 AppointHistory.setType(1);
-                DBUtil.insertAptHist(AppointHistory);
+                AppointHistoryBiz.insert(AppointHistory);
                 log.info("预约成功");
                 hasMaxAppointment = true;
             } catch (Exception e) {
@@ -119,7 +116,7 @@ public class App {
     }
 
     private String getPhones(Ticket ticket){
-        return DBUtil.selectList(Collections.singletonList(ticket.getShopId()),null,1, 1).stream()
+        return AppointHistoryBiz.selectList(Collections.singletonList(ticket.getShopId()),null,1, 1).stream()
                 .filter(t -> t.getAppointmentDate().equals(ticket.getAppointmentDate()))
                 .map(AppointHistory::getPhone)
                 .collect(Collectors.joining(","));
@@ -127,7 +124,7 @@ public class App {
     }
 
     private long appointedCount(Ticket ticket) {
-        return DBUtil.selectList(Collections.singletonList(ticket.getShopId()),null,1, 1).stream()
+        return AppointHistoryBiz.selectList(Collections.singletonList(ticket.getShopId()),null,1, 1).stream()
                 .filter(t -> t.getAppointmentDate().equals(ticket.getAppointmentDate()))
                 .filter(t -> t.getShopId().equals(ticket.getShopId()))
                 .count();
