@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.example.http.HttpService;
 import org.example.model.BaseResult;
-import org.example.model.AppointHistory;
+import org.example.model.entity.AppointHistory;
 import org.example.model.Ticket;
 
 import java.io.IOException;

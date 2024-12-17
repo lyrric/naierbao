@@ -2,11 +2,7 @@ package org.example.util;
 
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import org.example.model.AppointHistory;
-
-import java.util.Collections;
-import java.util.List;
+import org.example.model.entity.AppointHistory;
 
 public class AppointHistoriesUtils {
 

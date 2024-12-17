@@ -6,6 +6,8 @@ import org.example.db.AppointHistoryBiz;
 import org.example.http.HttpService;
 import org.example.http.MessageService;
 import org.example.model.*;
+import org.example.model.entity.AppointHistory;
+import org.example.model.entity.Config;
 import org.example.util.AreaUtil;
 import org.example.util.ConfigUtils;
 import org.example.util.PhoneUtil;
@@ -44,30 +46,30 @@ public class App {
         }
     }
 
-    public void doRun(String shopId,Config config) {
+    public void doRun(String shopId, Config Config) {
         try {
             BaseResult<List<Ticket>> result = HttpService.getTicket(shopId);
             if(!result.getSuccess()){
                 log.error("接口返回出错: {}" ,result.getMsg());
                 return;
             }
-            check(result.getData(),config);
+            check(result.getData(), Config);
         } catch (Exception e) {
             log.error("未知错误: " ,e);
         }
     }
 
-    public void check(List<Ticket> tickets, Config config) {
+    public void check(List<Ticket> tickets, Config Config) {
         if (tickets == null || tickets.isEmpty()) {
             log.info("没有获取到数据");
             return;
         }
         for (Ticket ticket : tickets) {
             if (ticket.getStockNum() - ticket.getAppointmentNum() > 0) {
-                if (appointedCount(ticket) < (config == null ? 1 : config.getMaxCountPerDay())) {
+                if (appointedCount(ticket) < (Config == null ? 1 : Config.getMaxCountPerDay())) {
                     log.info("{}有票了", ticket.getShopName());
                     //预约
-                    appoint(ticket, config);
+                    appoint(ticket, Config);
                 }
 
             }
@@ -81,10 +83,10 @@ public class App {
         log.info("读取配置文件 {}", JSONObject.toJSONString(configMap));
     }
 
-    public void appoint(Ticket ticket, Config config) {
+    public void appoint(Ticket ticket, Config Config) {
         long appointedCount = appointedCount(ticket);
         boolean hasMaxAppointment = false;
-        for (long i = appointedCount; i < (config == null ? 1 : config.getMaxCountPerDay()); i++) {
+        for (long i = appointedCount; i < (Config == null ? 1 : Config.getMaxCountPerDay()); i++) {
             //预约
             String phone = PhoneUtil.generateRandomPhoneNumber();
             try {
@@ -107,9 +109,9 @@ public class App {
         if (hasMaxAppointment) {
             String phones = getPhones(ticket);
             //发送预约成功短信
-            if (config != null) {
-                Optional<Area> optionalArea = AreaUtil.getArea(config.getShopId());
-                MessageService.sendAppointedMessage(optionalArea.map(Area::getDictValue).orElse(""), ticket.getShopName(), ticket.getAppointmentDate(), phones, config);
+            if (Config != null) {
+                Optional<Area> optionalArea = AreaUtil.getArea(Config.getShopId());
+                MessageService.sendAppointedMessage(optionalArea.map(Area::getDictValue).orElse(""), ticket.getShopName(), ticket.getAppointmentDate(), phones, Config);
             }
 
         }

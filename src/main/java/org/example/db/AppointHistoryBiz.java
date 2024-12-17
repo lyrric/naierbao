@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.example.db.mapper.AppointHistoryMapper;
-import org.example.model.AppointHistory;
+import org.example.model.entity.AppointHistory;
 import org.example.util.AppointHistoriesUtils;
 
 import java.util.List;

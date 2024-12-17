@@ -92,7 +92,7 @@
 
 
      <build>
-		<finalName>naierbao</finalName>
+		<finalName>naierbao-mysql</finalName>
 		<plugins>
             <plugin>
                 <groupId>org.openjfx</groupId>

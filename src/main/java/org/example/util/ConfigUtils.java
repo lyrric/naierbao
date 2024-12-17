@@ -3,7 +3,7 @@ package org.example.util;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.example.model.Config;
+import org.example.model.entity.Config;
 
 import java.util.Collections;
 import java.util.List;

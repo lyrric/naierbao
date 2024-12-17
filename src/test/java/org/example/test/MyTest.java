@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.example.http.HttpService;
 import org.example.model.BaseResult;
-import org.example.model.AppointHistory;
+import org.example.model.entity.AppointHistory;
 import org.example.model.Ticket;
-import org.example.util.AppointHistoriesUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 

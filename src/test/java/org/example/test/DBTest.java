@@ -3,9 +3,7 @@ package org.example.test;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.example.db.AppointHistoryBiz;
-import org.example.db.DBUtil;
-import org.example.model.AppointHistory;
-import org.example.model.Config;
+import org.example.model.entity.AppointHistory;
 import org.junit.Ignore;
 import org.junit.Test;
 

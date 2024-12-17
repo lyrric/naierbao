@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -48,4 +49,5 @@ public class AppointHistory {
      * 1 默认，2 旧数据，3 新数据
      */
     private Integer type;
+
 }

@@ -11,7 +11,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.example.model.BaseResult;
-import org.example.model.AppointHistory;
+import org.example.model.entity.AppointHistory;
 import org.example.model.Ticket;
 
 import java.io.IOException;

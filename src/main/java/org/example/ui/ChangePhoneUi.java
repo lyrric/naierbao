@@ -14,7 +14,7 @@ import javafx.util.Pair;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.example.db.AppointHistoryBiz;
-import org.example.model.AppointHistory;
+import org.example.model.entity.AppointHistory;
 import org.example.model.Area;
 import org.example.util.AreaUtil;
 import org.example.util.ChangePhoneUtils;

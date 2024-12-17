@@ -1,18 +1,24 @@
-package org.example.model;
+package org.example.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Config {
+
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -28,10 +34,6 @@ public class Config {
      */
     private String shopName;
     /**
-     * 闲鱼昵称
-     */
-    private String xianyuNickname;
-    /**
      * 手机号码
      */
     private String phone;
@@ -42,7 +44,7 @@ public class Config {
     /**
      * 推送的列表
      */
-    private List<String> spts = new ArrayList<>();
+    private String spts;
     /**
      * 每天最多预约数量
      */
@@ -64,4 +66,10 @@ public class Config {
      */
     private Boolean deleted;
 
+    public List<String> getSptsList() {
+        if (spts == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(spts.split(",")).collect(Collectors.toList());
+    }
 }

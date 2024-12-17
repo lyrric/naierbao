@@ -2,29 +2,23 @@ package org.example.db;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder;
-import com.baomidou.mybatisplus.core.MybatisSqlSessionFactoryBuilder;
-import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.mapping.Environment;
-import org.apache.ibatis.mapping.SqlCommandType;
-import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.example.db.mapper.AppointHistoryMapper;
-import org.example.model.AppointHistory;
+import org.example.db.mapper.ConfigMapper;
+import org.example.model.entity.AppointHistory;
 import org.example.model.DBConfig;
 import org.example.util.DBConfigUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Slf4j
 public class DBUtil {
@@ -46,6 +40,7 @@ public class DBUtil {
 
         MybatisConfiguration mybatisConfiguration = new MybatisConfiguration(environment);
         mybatisConfiguration.addMapper(AppointHistoryMapper.class);
+        mybatisConfiguration.addMapper(ConfigMapper.class);
 
         MybatisSqlSessionFactoryBuilder factoryBuilder = new MybatisSqlSessionFactoryBuilder();
         sqlSessionFactory =  factoryBuilder.build(mybatisConfiguration);
