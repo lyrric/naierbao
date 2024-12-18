@@ -11,6 +11,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.example.db.mapper.AppointHistoryMapper;
 import org.example.db.mapper.ConfigMapper;
+import org.example.db.mapper.RunInfoMapper;
 import org.example.model.entity.AppointHistory;
 import org.example.model.DBConfig;
 import org.example.util.DBConfigUtils;
@@ -40,6 +41,7 @@ public class DBUtil {
         MybatisConfiguration mybatisConfiguration = new MybatisConfiguration(environment);
         mybatisConfiguration.addMapper(AppointHistoryMapper.class);
         mybatisConfiguration.addMapper(ConfigMapper.class);
+        mybatisConfiguration.addMapper(RunInfoMapper.class);
 
         MybatisSqlSessionFactoryBuilder factoryBuilder = new MybatisSqlSessionFactoryBuilder();
         sqlSessionFactory =  factoryBuilder.build(mybatisConfiguration);

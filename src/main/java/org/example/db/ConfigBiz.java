@@ -30,7 +30,6 @@ public class ConfigBiz {
             session.commit();
         }
 
-
     }
 
     public static List<Config> selectList()  {

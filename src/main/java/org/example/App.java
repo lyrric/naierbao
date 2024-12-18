@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import lombok.extern.slf4j.Slf4j;
 import org.example.db.AppointHistoryBiz;
 import org.example.db.ConfigBiz;
+import org.example.db.RunInfoBiz;
 import org.example.http.HttpService;
 import org.example.http.MessageService;
 import org.example.model.Area;
@@ -45,6 +46,7 @@ public class App {
                 if (!run.get()) {
                     return;
                 }
+                RunInfoBiz.updateLastRunTime();
                 setLabelText("已运行次数: " + runCount + " 成功次数：" + successCount.get());
                 for (Area area : AreaUtil.getAreas()) {
                     log.debug("开始遍历地区 {}", area.getDictValue());
@@ -130,7 +132,6 @@ public class App {
                 Optional<Area> optionalArea = AreaUtil.getArea(Config.getShopId());
                 MessageService.sendAppointedMessage(optionalArea.map(Area::getDictValue).orElse(""), ticket.getShopName(), ticket.getAppointmentDate(), phones, Config);
             }
-
         }
     }
 
