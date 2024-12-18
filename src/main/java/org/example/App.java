@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,20 +30,22 @@ public class App {
     private AtomicBoolean run = new AtomicBoolean(false);
 
     private final ExecutorService queryService = Executors.newFixedThreadPool(10);
-    Label statusLabel;
 
-    private long count = 0;
+    private final Label statusLabel;
+    private long runCount = 0;
+    private final AtomicLong successCount = new AtomicLong(0);
+
     public App(Label statusLabel) {
         this.statusLabel = statusLabel;
     }
     private void doStart() {
         new Thread(()->{
             while (true) {
-                count++;
+                runCount++;
                 if (!run.get()) {
                     return;
                 }
-                setLabelText("已运行次数: " + count);
+                setLabelText("已运行次数: " + runCount + " 成功次数：" + successCount.get());
                 for (Area area : AreaUtil.getAreas()) {
                     log.debug("开始遍历地区 {}", area.getDictValue());
                     List<Area> children = area.getChildren();
@@ -113,6 +116,7 @@ public class App {
                 AppointHistory.setType(1);
                 AppointHistoryBiz.insert(AppointHistory);
                 log.info("预约成功");
+                successCount.incrementAndGet();
                 hasMaxAppointment = true;
             } catch (Exception e) {
                 log.error("预约时发生错误 ", e);

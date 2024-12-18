@@ -58,7 +58,7 @@ public class ConfigUi {
             onDelConfig();
         });
         // 将菜单项添加到上下文菜单中
-        contextMenu.getItems().addAll(newItem,editItem);
+        contextMenu.getItems().addAll(newItem, editItem, delItem);
         tableView.setOnContextMenuRequested(event -> {
             // 确保在选择模型中有选中的项
             if (tableView.getSelectionModel().getSelectedItem() != null) {

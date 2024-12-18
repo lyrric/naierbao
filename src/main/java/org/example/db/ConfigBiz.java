@@ -22,8 +22,11 @@ public class ConfigBiz {
         try( SqlSession session = DBUtil.getSession()) {
             ConfigMapper mapper = session.getMapper(ConfigMapper.class);
             mapper.insert(config);
+            configs =  mapper.selectList(new LambdaQueryWrapper<Config>()
+                    .eq(Config::getDeleted, 0));
             session.commit();
         }
+
 
     }
 
