@@ -284,6 +284,7 @@ public class ChangePhoneUi extends Application {
             if (areaBox.getValue() == null) {
                 shopBox.getItems().clear();
             }else{
+                shopBox.getItems().clear();
                 List<Area> shops = AreaUtil.getShops(areaBox.getValue().getValue().getId());
                 List<Pair<String, Area>> shopPairs = shops
                         .stream()

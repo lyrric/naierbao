@@ -31,17 +31,20 @@ public class App {
                 List<Area> children = area.getChildren();
                 if (children != null && !children.isEmpty()) {
                     for (Area child : children) {
-                        log.info("开始查询门店：{}", child.getDictValue());
-                        doRun(child.getRemark(), configMap.get(child.getRemark()));
-                        log.info("结束查询门店：{}", child.getDictValue());
+                        new Thread(()->{
+                            log.info("开始查询门店：{}", child.getDictValue());
+                            doRun(child.getRemark(), configMap.get(child.getRemark()));
+                            log.info("结束查询门店：{}", child.getDictValue());
+                            }).start();
+
                     }
                 }
                 log.info("结束遍历地区 {}", area.getDictValue());
             }
             try {
-                Thread.sleep(1000 * 10);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -66,10 +69,11 @@ public class App {
         }
         for (Ticket ticket : tickets) {
             if (ticket.getStockNum() - ticket.getAppointmentNum() > 0) {
-                if (appointedCount(ticket) < (Config == null ? 1 : Config.getMaxCountPerDay())) {
+                if (appointedCount(ticket) < (Config == null ? 2 : Config.getMaxCountPerDay())) {
                     log.info("{}有票了", ticket.getShopName());
                     //预约
-                    appoint(ticket, Config);
+                    new Thread(()->{
+                        appoint(ticket, Config);}).start();
                 }
 
             }
@@ -86,7 +90,7 @@ public class App {
     public void appoint(Ticket ticket, Config Config) {
         long appointedCount = appointedCount(ticket);
         boolean hasMaxAppointment = false;
-        for (long i = appointedCount; i < (Config == null ? 1 : Config.getMaxCountPerDay()); i++) {
+        for (long i = appointedCount; i < (Config == null ? 2 : Config.getMaxCountPerDay()); i++) {
             //预约
             String phone = PhoneUtil.generateRandomPhoneNumber();
             try {
