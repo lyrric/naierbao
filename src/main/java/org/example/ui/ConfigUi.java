@@ -14,14 +14,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class ConfigUi extends Application {
+public class ConfigUi {
 
 
     TableView<Config> tableView ;
 
+    Scene scene;
+
 
     public ConfigUi() {
         initTableView();
+        initScene();
     }
 
 
@@ -43,12 +46,16 @@ public class ConfigUi extends Application {
         ContextMenu contextMenu = new ContextMenu();
         MenuItem editItem = new MenuItem("Edit");
         MenuItem newItem = new MenuItem("New");
+        MenuItem delItem = new MenuItem("Del");
         // 为菜单项添加动作处理器
         editItem.setOnAction(event -> {
             onEditConfig();
         });
         newItem.setOnAction(event -> {
             onNewConfig();
+        });
+        delItem.setOnAction(event -> {
+            onDelConfig();
         });
         // 将菜单项添加到上下文菜单中
         contextMenu.getItems().addAll(newItem,editItem);
@@ -70,21 +77,27 @@ public class ConfigUi extends Application {
         refresh();
     }
 
-    @Override
-    public void start(Stage primaryStage) {
+    private void onDelConfig() {
+        Config config = tableView.getSelectionModel().getSelectedItem();
+        ConfigBiz.deleteById(config.getId());
+        refresh();
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION, "操作成功", ButtonType.OK);
+        alert.setTitle("提示");
+        alert.setHeaderText("");
+        alert.showAndWait();
+    }
+
+    public void initScene() {
         VBox vbox = new VBox(tableView);
-        Scene scene = new Scene(vbox);
-        primaryStage.setTitle("设置");
-        primaryStage.setScene( scene );
-        primaryStage.show();
+        scene = new Scene(vbox);
     }
     private void refresh(){
         tableView.getItems().clear();
         List<Config> Configs = ConfigBiz.selectList();
         tableView.getItems().addAll(Configs);
     }
-    public static void main(String[] args) {
-        launch(args);
+    public Scene getScene(){
+        return scene;
     }
 
     private void onNewConfig(){
@@ -94,6 +107,10 @@ public class ConfigUi extends Application {
         optional.ifPresent(c -> {
             ConfigBiz.insert(config);
             refresh();
+            final Alert alert = new Alert(Alert.AlertType.INFORMATION, "操作成功", ButtonType.OK);
+            alert.setTitle("提示");
+            alert.setHeaderText("");
+            alert.showAndWait();
         });
     }
 
@@ -104,6 +121,10 @@ public class ConfigUi extends Application {
         optional.ifPresent(c -> {
             ConfigBiz.update(config);
             refresh();
+            final Alert alert = new Alert(Alert.AlertType.INFORMATION, "操作成功", ButtonType.OK);
+            alert.setTitle("提示");
+            alert.setHeaderText("");
+            alert.showAndWait();
         });
     }
 

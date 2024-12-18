@@ -1,5 +1,6 @@
 package org.example.db;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.example.db.mapper.AppointHistoryMapper;
 import org.example.model.entity.AppointHistory;
 import org.example.util.AppointHistoriesUtils;
 
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +37,9 @@ public class AppointHistoryBiz {
                     .in(shopIds != null && !shopIds.isEmpty(), AppointHistory::getShopId, shopIds)
                     .eq(StringUtils.isNotBlank(phone), AppointHistory::getPhone, phone)
                     .eq(status != null, AppointHistory::getStatus, status)
-                    .eq(type != null, AppointHistory::getType, type).last(" limit 100"));
+                    .eq(type != null, AppointHistory::getType, type)
+                            .ge(AppointHistory::getAppointmentDate, DateUtil.format(new Date(), "yyyy-MM-dd"))
+                    .last(" limit 100"));
         }
 
     }

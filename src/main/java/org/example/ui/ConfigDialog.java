@@ -21,6 +21,7 @@ public class ConfigDialog extends Dialog<Config> {
     ChoiceBox<Pair<String, Area>> shopBox ;
     TextField phoneFiled ;
     TextField sptsFiled ;
+    TextField countFiled ;
     TextArea remarkArea;
     private Config config;
 
@@ -33,7 +34,7 @@ public class ConfigDialog extends Dialog<Config> {
         VBox vbox = new VBox(
                 new Label("门店"),
                 new HBox(areaBox,shopBox),
-                new Label("手机号码"), phoneFiled,
+                new Label("每日数量"), countFiled,
                 new Label("spts"), sptsFiled,
                 new Label("备注"), remarkArea
         );
@@ -53,9 +54,11 @@ public class ConfigDialog extends Dialog<Config> {
         phoneFiled = new TextField();
         sptsFiled = new TextField();
         remarkArea = new TextArea();
+        countFiled = new TextField();
         phoneFiled.setText( config.getPhone());
         sptsFiled.setText( config.getSpts());
         remarkArea.setText( config.getRemark());
+        countFiled.setText( String.valueOf(config.getMaxCountPerDay()));
     }
 
 
@@ -131,6 +134,7 @@ public class ConfigDialog extends Dialog<Config> {
             config.setShopName(shopBox.getValue().getValue().getDictValue());
             config.setRemark(remarkArea.getText());
             config.setSpts(sptsFiled.getText());
+            config.setMaxCountPerDay(Integer.valueOf(countFiled.getText()));
             return config;
         }
         return null;

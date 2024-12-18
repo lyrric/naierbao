@@ -1,7 +1,6 @@
 package org.example.ui;
 
 import cn.hutool.core.date.DateUtil;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,13 +8,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.util.StringConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.example.db.AppointHistoryBiz;
-import org.example.model.entity.AppointHistory;
 import org.example.model.Area;
+import org.example.model.entity.AppointHistory;
 import org.example.util.AreaUtil;
 import org.example.util.ChangePhoneUtils;
 
@@ -27,7 +25,7 @@ import java.util.stream.Collectors;
 
 
 @Slf4j
-public class ChangePhoneUi extends Application {
+public class HistoryUi {
 
 
     ChoiceBox<Pair<String, Area>> areaBox ;
@@ -36,21 +34,23 @@ public class ChangePhoneUi extends Application {
     ChoiceBox<Pair<String, Integer>> typeBox ;
     TextField phoneFiled ;
     TableView<AppointHistory> tableView ;
+    Scene scene;
 
-
-    public ChangePhoneUi() {
+    public HistoryUi() {
         initAreaChoiceBox();
         initShopChoiceBox();
         initStatusBox();
         initTypeBox();
         initPhoneFiled();
         initTableView();
+        initScene();
     }
 
     private void initStatusBox() {
         statusBox = new ChoiceBox<>();
         statusBox.getItems().add(new Pair<>("", null));
-        statusBox.getItems().add(new Pair<>("待使用", 1));
+        Pair<String, Integer> defaultItem = new Pair<>("待使用", 1);
+        statusBox.getItems().add(defaultItem);
         statusBox.getItems().add(new Pair<>("已取消", 2));
         statusBox.getItems().add(new Pair<>("已使用", 3));
         statusBox.setConverter(new StringConverter<Pair<String, Integer>>() {
@@ -62,11 +62,13 @@ public class ChangePhoneUi extends Application {
             public Pair<String, Integer> fromString(String string) {return null;
             }}
         );
+        statusBox.setValue(defaultItem);
     }
     private void initTypeBox() {
         typeBox = new ChoiceBox<>();
         typeBox.getItems().add(new Pair<>("", null));
-        typeBox.getItems().add(new Pair<>("默认", 1));
+        Pair<String, Integer> defaultItem = new Pair<>("默认", 1);
+        typeBox.getItems().add(defaultItem);
         typeBox.getItems().add(new Pair<>("旧数据", 2));
         typeBox.getItems().add(new Pair<>("新数据", 3));
         typeBox.setConverter(new StringConverter<Pair<String, Integer>>() {
@@ -78,13 +80,13 @@ public class ChangePhoneUi extends Application {
             public Pair<String, Integer> fromString(String string) {return null;
             }}
         );
+        typeBox.setValue(defaultItem);
     }
     private void initPhoneFiled() {
         phoneFiled = new TextField();
     }
 
-    @Override
-    public void start(Stage primaryStage){
+    private void initScene(){
         Label label = new Label("选择门店信息：");
         Button queryBtn = new Button("Query");
         HBox hbox1 = new HBox(
@@ -107,15 +109,15 @@ public class ChangePhoneUi extends Application {
         hbox1.setPadding( new Insets(40,0,0,40) );
         hbox2.setPadding( new Insets(20,0,20,40) );
 
-        Scene scene = new Scene(vbox);
 
         queryBtn.setOnMouseClicked(event -> {
             refresh();
         });
+        scene = new Scene(vbox);
+    }
 
-        primaryStage.setTitle("切换手机号");
-        primaryStage.setScene( scene );
-        primaryStage.show();
+    public Scene getScene(){
+        return scene;
     }
 
     private void refresh(){
@@ -143,13 +145,6 @@ public class ChangePhoneUi extends Application {
                 type);
         tableView.getItems().clear();
         tableView.getItems().addAll(appointHistories);
-    }
-    public static void show() {
-        launch();
-    }
-
-    public static void main(String[] args) {
-        show();
     }
 
 
@@ -322,6 +317,10 @@ public class ChangePhoneUi extends Application {
                         change.setType(3);
                         AppointHistoryBiz.updateAptHist(selectedItem.getId(), 2,2);
                         AppointHistoryBiz.insert(change);
+                        final Alert alert2 = new Alert(Alert.AlertType.INFORMATION,"操作成功", ButtonType.OK); // 实体化Alert对话框对象，并直接在建构子设置对话框的消息类型
+                        alert2.setTitle("操作成功");
+                        alert2.setHeaderText("");
+                        alert2.showAndWait();
                         refresh();
                     }catch (Exception e){
                         final Alert alert2 = new Alert(Alert.AlertType.INFORMATION, e.getMessage(), ButtonType.OK); // 实体化Alert对话框对象，并直接在建构子设置对话框的消息类型
