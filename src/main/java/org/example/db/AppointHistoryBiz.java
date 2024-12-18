@@ -39,7 +39,7 @@ public class AppointHistoryBiz {
                     .eq(status != null, AppointHistory::getStatus, status)
                     .eq(type != null, AppointHistory::getType, type)
                     .ge(AppointHistory::getAppointmentDate, DateUtil.format(new Date(), "yyyy.MM.dd"))
-                    .orderBy(true,true,AppointHistory::getCreateTime)
+                    .orderBy(true,true,AppointHistory::getAppointmentDate)
                     .last(" limit 100"));
         }
 
