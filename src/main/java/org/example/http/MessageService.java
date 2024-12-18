@@ -17,6 +17,7 @@ public class MessageService {
         }
     }
 
+
     public static void sendAppointedMessage(String area, String shopName, String date, String phones, Config Config) {
         try {
             String content = String.format("<p>门店：%s，日期：%s，预约手机号：%s，预约成功！</p>", area + "-" + shopName, date, phones);

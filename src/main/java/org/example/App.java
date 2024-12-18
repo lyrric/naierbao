@@ -13,11 +13,16 @@ import org.example.util.ConfigUtils;
 import org.example.util.PhoneUtil;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class App {
+
+
+    private final ExecutorService queryService = Executors.newFixedThreadPool(10);
 
 
     private Map<String, Config> configMap;
@@ -27,19 +32,17 @@ public class App {
         log.info("开始运行");
         while (true) {
             for (Area area : AreaUtil.getAreas()) {
-                log.info("开始遍历地区 {}", area.getDictValue());
+                log.debug("开始遍历地区 {}", area.getDictValue());
                 List<Area> children = area.getChildren();
                 if (children != null && !children.isEmpty()) {
                     for (Area child : children) {
-                        new Thread(()->{
-                            log.info("开始查询门店：{}", child.getDictValue());
+                        queryService.execute(()->{
                             doRun(child.getRemark(), configMap.get(child.getRemark()));
-                            log.info("结束查询门店：{}", child.getDictValue());
-                            }).start();
+                        });
 
                     }
                 }
-                log.info("结束遍历地区 {}", area.getDictValue());
+                log.debug("结束遍历地区 {}", area.getDictValue());
             }
             try {
                 Thread.sleep(10000);
@@ -64,7 +67,7 @@ public class App {
 
     public void check(List<Ticket> tickets, Config Config) {
         if (tickets == null || tickets.isEmpty()) {
-            log.info("没有获取到数据");
+            log.debug("没有获取到数据");
             return;
         }
         for (Ticket ticket : tickets) {
