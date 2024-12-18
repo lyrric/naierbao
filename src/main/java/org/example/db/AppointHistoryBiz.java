@@ -46,6 +46,7 @@ public class AppointHistoryBiz {
                     .eq(AppointHistory::getId, id)
                     .set(AppointHistory::getStatus, status)
                     .set(AppointHistory::getType, type));
+            session.commit();
         }
 
     }
@@ -53,6 +54,7 @@ public class AppointHistoryBiz {
         try( SqlSession session = DBUtil.getSession()) {
             AppointHistoryMapper mapper = session.getMapper(AppointHistoryMapper.class);
             mapper.deleteById(id);
+            session.commit();
         }
 
     }

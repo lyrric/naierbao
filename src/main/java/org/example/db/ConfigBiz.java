@@ -35,6 +35,7 @@ public class ConfigBiz {
         try( SqlSession session = DBUtil.getSession()) {
             ConfigMapper mapper = session.getMapper(ConfigMapper.class);
             mapper.updateById(config);
+            session.commit();
         }
 
     }
@@ -44,6 +45,7 @@ public class ConfigBiz {
             mapper.update(null, new LambdaUpdateWrapper<>(Config.class)
                     .eq(Config::getId, id)
                     .set(Config::getDeleted, 1));
+            session.commit();
         }
 
     }

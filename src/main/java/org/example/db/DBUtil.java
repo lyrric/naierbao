@@ -33,7 +33,6 @@ public class DBUtil {
         dataSource.setUrl(dbConfig.getUrl());
         dataSource.setUsername(dbConfig.getUsername());
         dataSource.setPassword(dbConfig.getPassword());
-
         // 配置 MyBatis
         TransactionFactory transactionFactory = new JdbcTransactionFactory();
         Environment environment = new Environment("development", transactionFactory, dataSource);

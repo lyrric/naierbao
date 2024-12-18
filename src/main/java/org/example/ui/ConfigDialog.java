@@ -22,9 +22,11 @@ public class ConfigDialog extends Dialog<Config> {
     TextField phoneFiled ;
     TextField sptsFiled ;
     TextArea remarkArea;
+    private Config config;
 
 
     public ConfigDialog(Config config) {
+        this.config = config;
         initAreaChoiceBox(config);
         initShopChoiceBox(config);
         initTextField(config);
@@ -44,6 +46,7 @@ public class ConfigDialog extends Dialog<Config> {
         ButtonType bt = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
         dp.getButtonTypes().addAll( bt, ButtonType.CANCEL );
         dp.setContent( vbox );
+        setResultConverter( this::formResult );
     }
 
     private void initTextField(Config config) {
@@ -105,5 +108,33 @@ public class ConfigDialog extends Dialog<Config> {
             @Override
             public Pair<String, Area> fromString(String string) {return null;}
         });
+        Pair<String, Area> areaPair = areaBox.getSelectionModel().getSelectedItem();
+        if (areaPair != null) {
+            List<Area> shops = AreaUtil.getShops(areaPair.getValue().getId());
+            List<Pair<String, Area>> shopPairs = shops
+                    .stream()
+                    .map(t -> new Pair<>(t.getDictValue(),t))
+                    .collect(Collectors.toList());
+            shopPairs.add(0, new Pair<>("", null));
+            shopBox.getItems().addAll(shopPairs);
+            shopPairs.stream().filter(t -> t.getValue() != null && t.getValue().getRemark().equals(config.getShopId())).findFirst()
+                    .ifPresent(t -> {
+                        shopBox.setValue((t));
+                    });
+        }
     }
+
+    private Config formResult(ButtonType bt) {
+        if( bt.getButtonData() == ButtonBar.ButtonData.OK_DONE ) {
+            config.setAreaName(areaBox.getValue().getValue().getDictValue());
+            config.setShopId(shopBox.getValue().getValue().getRemark());
+            config.setShopName(shopBox.getValue().getValue().getDictValue());
+            config.setRemark(remarkArea.getText());
+            config.setSpts(sptsFiled.getText());
+            return config;
+        }
+        return null;
+    }
+
+
 }

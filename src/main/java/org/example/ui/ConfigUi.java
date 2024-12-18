@@ -11,6 +11,7 @@ import org.example.db.ConfigBiz;
 import org.example.model.entity.Config;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class ConfigUi extends Application {
@@ -89,25 +90,21 @@ public class ConfigUi extends Application {
     private void onNewConfig(){
         Config config = new Config();
         ConfigDialog dialog = new ConfigDialog(config);
-        dialog.setResultConverter(bt -> {
-            if(bt.getButtonData() == ButtonBar.ButtonData.OK_DONE ) {
-                ConfigBiz.insert(config);
-            }
-            return config;
+        Optional<Config> optional = dialog.showAndWait();
+        optional.ifPresent(c -> {
+            ConfigBiz.insert(config);
+            refresh();
         });
-        dialog.showAndWait();
     }
 
     private void onEditConfig(){
         Config config = tableView.getSelectionModel().getSelectedItem();
         ConfigDialog dialog = new ConfigDialog(config);
-        dialog.setResultConverter(bt -> {
-            if(bt.getButtonData() == ButtonBar.ButtonData.OK_DONE ) {
-               ConfigBiz.update(config);
-            }
-            return config;
+        Optional<Config> optional = dialog.showAndWait();
+        optional.ifPresent(c -> {
+            ConfigBiz.update(config);
+            refresh();
         });
-        dialog.showAndWait();
     }
 
 
