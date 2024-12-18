@@ -9,7 +9,6 @@ import org.example.model.entity.Config;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,6 +18,10 @@ public class ConfigBiz {
 
 
     public static void insert(Config config) {
+        if (configs.stream()
+                .anyMatch(t-> Objects.equals(config.getShopId(),t.getShopId()))) {
+            throw new RuntimeException("存在重复门店数据");
+        }
         try( SqlSession session = DBUtil.getSession()) {
             ConfigMapper mapper = session.getMapper(ConfigMapper.class);
             mapper.insert(config);
