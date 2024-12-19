@@ -144,15 +144,11 @@ public class App {
     }
 
     private long appointedCount(Ticket ticket) {
-        return AppointHistoryBiz.selectList(Collections.singletonList(ticket.getShopId()),null,1, 1).stream()
-                .filter(t -> t.getAppointmentDate().equals(ticket.getAppointmentDate()))
-                .filter(t -> t.getShopId().equals(ticket.getShopId()))
-                .count();
+        return AppointHistoryBiz.countByShopIdAndDate(ticket.getShopId(), ticket.getAppointmentDate());
     }
 
-
     private Map<String, Config> getConfigMap(){
-        return ConfigBiz.selectList()
+        return ConfigBiz.selectAll()
                 .stream()
                 .collect(Collectors.toMap(Config::getShopId, Function.identity()));
     }

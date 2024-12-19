@@ -4,13 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.example.db.AppointHistoryBiz;
 import org.example.model.entity.AppointHistory;
+import org.example.model.entity.Config;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.List;
 
-@Ignore
 @Slf4j
 public class DBTest {
 
@@ -50,17 +50,10 @@ public class DBTest {
         System.out.println(JSONObject.toJSONString(appointHistories));
     }
 
-/*    @Test
-    public void testGetConfigs(){
-        List<Config> configs = AppointHistoryBiz.getConfigs();
-        System.out.println(JSONObject.toJSONString(configs));
-    }
     @Test
-    public void testInsetConfig(){
-        List<Config> configs = DBUtil.getConfigs();
-        System.out.println(JSONObject.toJSONString(configs));
-        Config config = configs.get(0);
-        DBUtil.insertConfig1(config);
-    }*/
+    public void testGetCount(){
+        AppointHistoryBiz.countByShopIdAndDate("1","2222");
+    }
+
 
 }

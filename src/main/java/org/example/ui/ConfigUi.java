@@ -93,7 +93,7 @@ public class ConfigUi {
     }
     private void refresh(){
         tableView.getItems().clear();
-        List<Config> Configs = ConfigBiz.selectList();
+        List<Config> Configs = ConfigBiz.selectAll();
         tableView.getItems().addAll(Configs);
     }
     public Scene getScene(){
